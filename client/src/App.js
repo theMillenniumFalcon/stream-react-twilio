@@ -4,13 +4,18 @@ import { Chat } from 'stream-chat-react'
 
 import styled from 'styled-components'
 
-import {ChannelContainer, ChannelListContainer} from './components'
+import {ChannelContainer, ChannelListContainer, Auth} from './components'
 
 const apiKey = 'dvbr99w6rxrr'
 
 const client = StreamChat.getInstance(apiKey)
 
+const authToken = false
+
 function App() {
+
+  if (!authToken) return <Auth/>
+
   return (
     <Container>
       <Chat client={client} theme="team light">
