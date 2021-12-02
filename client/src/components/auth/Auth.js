@@ -3,6 +3,8 @@ import styled from "styled-components"
 import Cookies from "universal-cookie"
 import axios from "axios"
 
+const cookies = new Cookies()
+
 const initialState = {
     fullName: '',
     username: '',
@@ -20,9 +22,26 @@ const Auth = () => {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log(form)
+        const { fullName, username, password, phoneNumber, avatarURL } = form
+        const URL = 'http://localhost:5000/api/auth'
+
+        const { data: { token, userId, hashedPassword } } = await axios.post(`${URL}/${isSignup ? 'signup' : 'login'}`, {
+            username, password, fullName, phoneNumber, avatarURL
+        })
+
+        cookies.set('token', token)
+        cookies.set('username', username)
+        cookies.set('fullName', fullName)
+        cookies.set('userId', userId)
+
+        if (isSignup) {
+            cookies.set('phoneNumber', phoneNumber)
+            cookies.set('avatarURL', avatarURL)
+            cookies.set('hashedPassword', hashedPassword)
+        }
+        window.location.reload()
     }
 
     const switchMode = () => {
@@ -37,33 +56,33 @@ const Auth = () => {
                     <form onSubmit={handleSubmit}>
                         {isSignup && (
                             <FieldContentInput>
-                                <label htmlFpr="fulllName">Full Name</label>
+                                <label htmlFor="fulllName">Full Name</label>
                                 <input name="fullName" type="text" placeholder="Full Name" onChange={handleChange} required/>
                             </FieldContentInput>
                         )}
                         <FieldContentInput>
-                            <label htmlFpr="username">Username</label>
+                            <label htmlFor="username">Username</label>
                             <input name="username" type="text" placeholder="Username" onChange={handleChange} required/>
                         </FieldContentInput>
                         {isSignup && (
                             <FieldContentInput>
-                                <label htmlFpr="phoneNumber">Phone Number</label>
+                                <label htmlFor="phoneNumber">Phone Number</label>
                                 <input name="phoneNumber" type="text" placeholder="Phone Number" onChange={handleChange} required/>
                             </FieldContentInput>
                         )}
                         {isSignup && (
                             <FieldContentInput>
-                                <label htmlFpr="avatarURL">Avatar URL</label>
+                                <label htmlFor="avatarURL">Avatar URL</label>
                                 <input name="avatarURL" type="text" placeholder="Avatar URL" onChange={handleChange} required/>
                             </FieldContentInput>
                         )}
                         <FieldContentInput>
-                            <label htmlFpr="password">Password</label>
+                            <label htmlFor="password">Password</label>
                             <input name="password" type="password" placeholder="Password" onChange={handleChange} required/>
                         </FieldContentInput>
                         {isSignup && (
                             <FieldContentInput>
-                                <label htmlFpr="confirmPassword">Confirm Password</label>
+                                <label htmlFor="confirmPassword">Confirm Password</label>
                                 <input name="confirmPassword" type="password" placeholder="Confirm Password" onChange={handleChange} required/>
                             </FieldContentInput>
                         )}
